@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProceedPaymentFragment">
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Payment Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingBottom="16dp"
+                android:text="@string/payment_section"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/total_school_fees_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/school_fees"
+                android:textStyle="bold"
+                android:paddingBottom="8dp"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp" />
+            <TextView
+                android:id="@+id/total_school_fees_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/display_pricing"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/edit_student_statement_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/please_enter_the_card_details_below"
+                android:paddingBottom="8dp"
+                android:textSize="15sp"
+                android:textColor="@android:color/black"
+                android:paddingTop="15dp" />
+
+            <TextView
+                android:id="@+id/card_name_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="@string/card_holder_s_name"
+                android:paddingBottom="8dp"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/card_name_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_card_holder_s_name"
+                android:padding="16dp"
+                android:focusable="true"
+                android:inputType="text"/>
+
+            <TextView
+                android:id="@+id/card_number_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="@string/card_number"
+                android:paddingBottom="8dp"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+
+            <EditText
+                android:id="@+id/card_number_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_card_number"
+                android:inputType="number"
+                android:focusable="true"
+                android:maxLength="16"
+                android:padding="16dp" />
+
+            <TextView
+                android:id="@+id/card_expired_date_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="@string/expiration_date"
+                android:paddingBottom="8dp"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/expiry_date_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:hint="@string/mm_yy"
+                    android:padding="16dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/total_amount_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="@string/payment_amount"
+                android:paddingBottom="8dp"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RM"
+                    android:textSize="18sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp" />
+
+                <EditText
+                    android:id="@+id/student_school_fees"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/enter_total_amount"
+                    android:inputType="numberDecimal"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:padding="16dp"
+                    android:focusable="true"
+                    android:minHeight="48dp" />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/payment_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="italic"
+                android:paddingBottom="8dp"
+                android:textSize="12sp"
+                android:textColor="@color/red" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:gravity="center_horizontal">
+
+                <Button
+                    android:id="@+id/submit_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pay"
+                    android:backgroundTint="#003366"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:padding="16dp"/>
+
+                <ScrollView
+                    android:id="@+id/scroll_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- Add a LinearLayout to wrap multiple views -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <!-- Your TextView and Button go inside the LinearLayout -->
+                        <TextView
+                            android:id="@+id/payment_completed_message"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center"
+                            android:textStyle="bold"
+                            android:text="@string/thank_you_for_your_payment"
+                            android:paddingBottom="8dp"
+                            android:layout_gravity="center"
+                            android:textSize="18sp"
+                            android:textColor="@android:color/black"
+                            android:visibility="gone" />
+
+                        <Button
+                            android:id="@+id/idBtnGeneratePDF"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:backgroundTint="#003366"
+                            android:text="@string/download_pdf_receipt"
+                            android:drawableLeft="@drawable/baseline_download_24"
+                            android:drawablePadding="8dp" />
+
+                    </LinearLayout>
+                </ScrollView>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EnrolmentFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
+
+        <!-- Title TextView -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/enrolment_section_title"
+            android:textSize="26sp"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp" />
+
+        <!-- Enrollment Plan Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:text="@string/enrollment_plan"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingTop="10dp" />
+
+        <!-- Enrollment Plan RecyclerView -->
+        <TextView
+            android:id="@+id/no_enrollment_course_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_course_for_enrrolment"
+            android:textSize="16sp"
+            android:visibility="gone"
+            android:layout_gravity="center"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/enrolment_course_RecycleView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Course List Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Course List"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingBottom="5dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/course_list_checkbox_RecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Course Section Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/selected_course_id"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:paddingTop="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id = "@+id/selected_course_ID"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:textColor="#A0AFB4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/selected_course_name"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingBottom="5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id = "@+id/selected_course_name"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:textColor="#A0AFB4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/course_section"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="left"
+                android:paddingBottom="5dp"
+                android:paddingTop="10dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/course_section_info_RecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <!-- Selected Course Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="10dp">
+
+            <!--<TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Selected Course"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingBottom="5dp" />-->
+
+<!--        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/selected_course_RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />-->
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:gravity="center">
+
+        <Button
+            android:id="@+id/btnCS1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CS1"
+            android:backgroundTint="#A0AFB4"
+            android:layout_marginEnd="16dp"
+            android:padding="16dp" />
+
+        <Button
+            android:id="@+id/btnCS2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CS2"
+            android:backgroundTint="#A0AFB4"
+            android:padding="16dp" />
+
+    </LinearLayout>
+
+
+    <!-- Error TextView -->
+        <TextView
+            android:id="@+id/enrolment_error_handle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="italic"
+            android:paddingBottom="8dp"
+            android:textSize="12sp"
+            android:textColor="@color/red"/>
+
+            <Button
+                android:id="@+id/btnEnrol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/enrol_btn"
+                android:backgroundTint="#003366"
+                android:layout_marginTop="16dp"
+                android:padding="16dp" />
+
+    </LinearLayout>
+</ScrollView>

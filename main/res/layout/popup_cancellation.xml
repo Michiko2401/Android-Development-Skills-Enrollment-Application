@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Reason for cancellation -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="18dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="0.3"
+            android:text="@string/reason" />
+        <EditText
+            android:id="@+id/etReason"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/reason_for_cancellation"
+            android:inputType="text"
+            android:layout_weight="0.7"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <!-- Cancelled class date -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="18dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="0.3"
+            android:text="@string/cancelled_date" />
+        <EditText
+            android:id="@+id/etCancelledClassDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/cancelled_class_date_dd_mm_yyyy"
+            android:inputType="date"
+            android:layout_weight="0.7"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Replacement class date -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="18dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="0.3"
+            android:text="@string/replacement_date"
+            android:layout_marginBottom="8dp" />
+        <EditText
+            android:id="@+id/etReplacementClassDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/replacement_class_date_dd_mm_yyyy"
+            android:inputType="date"
+            android:layout_weight="0.7"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <!-- Replacement class time -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+        <TextView
+            android:layout_width="18dp"
+            android:layout_height="wrap_content"
+            android:text="@string/replacement_time"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="0.3"
+            android:layout_marginBottom="8dp"/>
+        <EditText
+            android:id="@+id/etReplacementClassTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:autofillHints="" android:hint="@string/replacement_class_time_hh_mm"
+            android:inputType="text"
+            android:layout_weight="0.7"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+    <!-- Replacement class location -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+        <TextView
+            android:layout_width="18dp"
+            android:layout_height="wrap_content"
+            android:text="@string/replacement_location"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="0.3"
+            android:layout_marginBottom="8dp"/>
+        <EditText
+            android:id="@+id/etReplacementClassLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/replacement_class_location"
+            android:inputType="text"
+            android:layout_weight="0.7"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+    <!-- Button row with Submit and Close buttons -->
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/btnSubmit"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="100dp"
+            android:text="@string/submit"/>
+
+        <Button
+            android:id="@+id/btnClose"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/close"
+            android:textColor="#C62828" />
+    </LinearLayout>
+</LinearLayout>

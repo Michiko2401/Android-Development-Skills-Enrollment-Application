@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeFragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayoutContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
+
+        <!-- TextView for week number -->
+        <TextView
+            android:id="@+id/weekInfoTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <!-- TabLayout for days -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayoutDays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="scrollable"
+            android:backgroundTint="#ECF5FA"
+            android:contentDescription="NULL" />
+
+        <!-- ViewPager2 for day fragments -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPagerDays"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <!--    &lt;!&ndash; Button placed inside FrameLayout for bottom alignment &ndash;&gt;
+    <Button
+    android:id="@+id/idBtnGeneratePDF"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|center"
+    android:backgroundTint="#003366"
+    android:text="@string/download_timetable"
+    android:drawableStart="@drawable/baseline_download_24"
+    android:drawablePadding="8dp"
+    android:padding="16dp"
+    android:layout_marginBottom="16dp" />-->
+
+</FrameLayout>
+

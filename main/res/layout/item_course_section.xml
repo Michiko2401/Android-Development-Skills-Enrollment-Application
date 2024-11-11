@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:divider="?android:attr/dividerHorizontal"
+    android:showDividers="middle">
+
+    <!-- Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Section:"
+            android:textStyle="bold"
+            android:paddingEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Section" />
+    </LinearLayout>
+
+    <!-- Lecture Day -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lecture Day:"
+            android:textStyle="bold"
+            android:paddingEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/lecture_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lecture Day" />
+    </LinearLayout>
+
+    <!-- Lecture Start Time -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lecture Start Time:"
+            android:textStyle="bold"
+            android:paddingEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/lecture_start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lecture Start Time" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="to"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"/>
+
+
+
+        <TextView
+            android:id="@+id/lecture_end_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lecture End Time" />
+    </LinearLayout>
+
+    <!-- Practical Day -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Practical Day:"
+            android:textStyle="bold"
+            android:paddingEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/practical_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Practical Day" />
+    </LinearLayout>
+
+    <!-- Practical Start Time -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Practical Start Time:"
+            android:textStyle="bold"
+            android:paddingEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/practical_start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Practical Start Time" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="to"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/practical_end_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Practical End Time" />
+    </LinearLayout>
+
+    <!-- Remarks -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remarks:"
+            android:textStyle="bold"
+            android:paddingEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/remarks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remarks" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProfileFragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayoutContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
+
+        <!-- Profile Section Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/profile_section_title"
+            android:textSize="26sp"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp" />
+
+        <!-- Section 1: Student Information -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="@drawable/user_section_border"
+            android:layout_marginBottom="16dp"
+            android:gravity="center_horizontal"> <!-- Center horizontally -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/student_information_label"
+                android:textSize="22sp"
+                android:paddingBottom="10dp"
+                android:textStyle="bold" />
+
+            <!-- TableLayout for Student Information -->
+
+
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="1"
+                android:shrinkColumns="1"
+                android:paddingTop="10dp">
+
+                <!-- Table Row 1 -->
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="@string/name_label"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/student_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"/>
+                </TableRow>
+
+                <!-- Table Row 2 -->
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/student_id_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/student_ID"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"/>
+                </TableRow>
+
+                <!-- Table Row 3 -->
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/email_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_email"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:scrollHorizontally="false"
+                        />
+                </TableRow>
+
+
+                <!-- Table Row 4 -->
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/phone_number_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_phone_no"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"/>
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/emergency_number_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_emergency_no"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="@string/address_label"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_address"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:scrollHorizontally="false"
+                        />
+                </TableRow>
+
+
+
+                <!-- Table Row 8 -->
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/intake_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_intake"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+                <!-- Table Row 6 -->
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/current_semester_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_current_semester"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+                <!-- Table Row 7 -->
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/session_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_session"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/year_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_year"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/study_mode_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_study_mode"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/level_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_level"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+            </TableLayout>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="80dp"
+                android:minHeight="48dp"
+                android:padding="8dp"
+                android:id="@+id/edit_profile_button"
+                android:text="@string/edit_button_label"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:backgroundTint="#C62828"
+                android:onClick="onEditProfileClick"
+                />
+        </LinearLayout>
+
+        <!-- Section 2: Program & Course Information -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="15dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/school_and_course_border">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/school_program_info_label"
+                android:textSize="22sp"
+                android:paddingBottom="10dp"
+                android:textStyle="bold"
+                />
+
+            <!-- TableLayout for Program & Course Information -->
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="1"
+                android:paddingTop="15dp">
+
+                <!-- Table Row 4 -->
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/school_id_label"
+                        android:textStyle="bold"
+                        android:padding="15dp"
+                        />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_school_Id"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:maxLines="3"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+                <!-- Table Row 5 -->
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/school_name_label"
+                        android:textStyle="bold"
+                        android:padding="10dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_school_name"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:maxLines="3"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+                <!-- Table Row 5 -->
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/program_id_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_programId"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:maxLines="3"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/program_name_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_program_name"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:maxLines="3"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+                <TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/total_course_label"
+                        android:textStyle="bold"
+                        android:padding="15dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id = "@+id/student_course_no"
+                        android:padding="15dp"
+                        android:layout_weight="1"
+                        android:ellipsize="none"
+                        android:singleLine="false"
+                        android:maxLines="3"
+                        android:scrollHorizontally="false"/>
+                </TableRow>
+
+
+            </TableLayout>
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="15dp"
+            android:background="@drawable/course_section_border">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/course_info_label"
+                android:textSize="22sp"
+                android:paddingBottom="10dp"
+                android:textStyle="bold"/>
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="1"
+                android:paddingTop="15dp">
+
+
+                <!-- Title -->
+
+
+
+
+                <!-- Current Courses Label -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/current_courses_label"
+                    android:textStyle="bold"/>
+
+                <!-- Current Courses Value -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/student_current_course"
+                    android:ellipsize="none"
+                    android:paddingTop="5dp"
+                    android:singleLine="false"
+                    android:scrollHorizontally="false"/>
+
+                <!-- Remaining Courses Label -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/remaining_courses_label"
+                    android:textStyle="bold"/>
+
+                <!-- Remaining Courses Value -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/student_remaining_course"
+                    android:ellipsize="none"
+                    android:paddingTop="5dp"
+                    android:singleLine="false"
+                    android:scrollHorizontally="false"/>
+
+                <!-- Completed Courses Label -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/completed_courses_label"
+                    android:textStyle="bold"/>
+
+                <!-- Completed Courses Value -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/student_completed_course"
+                    android:ellipsize="none"
+                    android:singleLine="false"
+                    android:paddingTop="5dp"
+                    android:scrollHorizontally="false"/>
+
+                <!-- Failed Courses Label -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/failed_courses_label"
+                    android:textStyle="bold"/>
+
+                <!-- Failed Courses Value -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/student_failed_course"
+                    android:ellipsize="none"
+                    android:singleLine="false"
+                    android:paddingTop="5dp"
+                    android:scrollHorizontally="false"/>
+
+            </TableLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

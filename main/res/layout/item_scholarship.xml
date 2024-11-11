@@ -1,0 +1,54 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Scholarship Name -->
+
+    <TextView
+        android:id="@+id/scholarship_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="@string/scholarship_name"
+        android:textSize="16sp"
+        android:paddingBottom="4dp" />
+
+    <!-- Scholarship Type, Percentage, and Amount in a single line -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Scholarship Type (Left) -->
+        <TextView
+            android:id="@+id/scholarship_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/scholarship_type"
+            android:gravity="start"/>
+
+        <!-- Scholarship Percentage (Center) -->
+        <TextView
+            android:id="@+id/scholarship_percentage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/scholarship_percentage"
+            android:gravity="center" />
+
+        <!-- Scholarship Amount (Right) -->
+        <TextView
+            android:id="@+id/scholarship_amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/scholarship_amount"
+            android:gravity="end" />
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "868051245786",
+    "project_id": "enrolment-app-cd6cd",
+    "storage_bucket": "enrolment-app-cd6cd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868051245786:android:f52da1aa57e4b6ba2ca3e3",
+        "android_client_info": {
+          "package_name": "student.inti.enrolmentapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6EWFEc9bYhF90y_lXS5wR6L2cr39_68s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

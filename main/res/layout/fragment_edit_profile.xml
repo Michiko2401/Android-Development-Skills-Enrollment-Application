@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".EditProfile"
+    android:background="#FFFFFF"
+    android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/edit_profile_section_title"
+            android:textSize="26sp"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp" />
+
+        <TextView
+            android:id="@+id/edit_student_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Student Name"
+            android:paddingBottom="8dp"
+            android:textSize="23sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/edit_student_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Student ID"
+            android:paddingBottom="8dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/edit_student_statement_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Please enter the information for update."
+            android:paddingBottom="8dp"
+            android:textSize="15sp"
+            android:textColor="@android:color/black"
+            android:paddingTop="15dp"/>
+
+        <TextView
+            android:id="@+id/edit_phone_statement_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/phone_number_label"
+            android:paddingBottom="8dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/edit_student_phone_no"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_phone_number_hint"
+            android:padding="12dp"
+            android:textSize="18sp"
+            android:inputType="phone" />
+
+        <TextView
+            android:id="@+id/edit_emergency_statement_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/emergency_number_label"
+            android:paddingBottom="8dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/edit_student_emergency_no"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_emergency_number_hint"
+            android:padding="12dp"
+            android:textSize="18sp"
+            android:inputType="phone" />
+
+        <TextView
+            android:id="@+id/edit_address_statement_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/address_label"
+            android:paddingBottom="8dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/edit_student_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_address_hint"
+            android:padding="12dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="8dp"
+            android:textSize="18sp"
+            android:inputType="textMultiLine"
+            android:minLines="3"
+            android:gravity="top" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center_horizontal">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100dp"
+                    android:minHeight="50dp"
+                    android:padding="8dp"
+                    android:id="@+id/submit_button"
+                    android:text="@string/submit_button_label"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    android:backgroundTint="#003366"
+                    android:onClick="onSubmitProfileClick" />
+        </LinearLayout>
+
+</LinearLayout>

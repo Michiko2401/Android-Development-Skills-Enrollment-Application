@@ -25,7 +25,6 @@ import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -125,9 +124,10 @@ public class ScheduleFragment extends Fragment {
                         for (CancelledClass replacementClass : cancelledClasses) {
                             try {
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                                Date replacementDate = dateFormat.parse(replacementClass.getCancelledDate());
+                                Date replacementDate = dateFormat.parse(replacementClass.getReplaceDate());
+                                String replaceDay = getDayOfWeek(replacementClass.getReplaceDate());
                                 if (isSameWeek(replacementDate, Calendar.getInstance().getTime()) &&
-                                        replacementClass.getCancelledDay().equals(day)) {
+                                        replaceDay.equals(day)) {
                                     hasClasses.set(true); // Mark that we have classes for today
 
                                     // Add replacement class details to the table
@@ -504,49 +504,6 @@ public class ScheduleFragment extends Fragment {
         return cancelledClasses;
     }
 
-    // Helper class to store cancellation details
-    private static class Cancellation {
-        private final String cancelledDate;
-        private final String cancelledStartTime;
-        private final String reason;
-        private final String replacementDate;
-        private final String replacementTime;
-        private final String replacementLocation;
-
-        public Cancellation(String cancelledDate, String cancelledStartTime, String reason, String replacementDate, String replacementTime, String replacementLocation) {
-            this.cancelledDate = cancelledDate;
-            this.cancelledStartTime = cancelledStartTime;
-            this.reason = reason;
-            this.replacementDate = replacementDate;
-            this.replacementTime = replacementTime;
-            this.replacementLocation = replacementLocation;
-        }
-
-        public String getCancelledDate() {
-            return cancelledDate;
-        }
-
-        public String getCancelledStartTime() {
-            return cancelledStartTime;
-        }
-
-        public String getReason() {
-            return reason;
-        }
-
-        public String getReplacementDate() {
-            return replacementDate;
-        }
-
-        public String getReplacementTime() {
-            return replacementTime;
-        }
-
-        public String getReplacementLocation() {
-            return replacementLocation;
-        }
-    }
-
     private boolean isSameWeek(Date date1, Date date2) {
         Calendar cal1 = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();
@@ -641,7 +598,7 @@ public class ScheduleFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     private void showCourseDetailPopup(String courseId, String courseName, String startTime, String endTime, String section, String location, String lecturer, String remarks, String classDay, String status) {
         // Declare cancellationList here
-        List<Cancellation> cancellationList = new ArrayList<>();
+        List<CancelledClass> cancellationList = new ArrayList<>();
 
         // Fetch cancellation details from the database
         db.collection("Students").document(userId)
@@ -680,28 +637,12 @@ public class ScheduleFragment extends Fragment {
                                         continue;
                                     }
 
-                                    cancellationList.add(new Cancellation(cancelledDate, cancelledStartTime, reason, replacementDate, replacementTime, replacementLocation));
+                                    cancellationList.add(new CancelledClass(courseId, cancelledDate, day, cancelledStartTime, reason, replacementDate, replacementTime, replacementLocation));
                                 }
                             }
 
                             // Filter out cancellations based on replacement dates
                             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                            String todayDate = sdf.format(new Date());
-
-                            Iterator<Cancellation> iterator = cancellationList.iterator();
-                            while (iterator.hasNext()) {
-                                Cancellation cancellation = iterator.next();
-                                try {
-                                    Date replacementDate = sdf.parse(cancellation.getReplacementDate());
-                                    Date currentDate = sdf.parse(todayDate);
-                                    if (replacementDate != null && replacementDate.before(currentDate)) {
-                                        iterator.remove();
-                                        removeCancelledClassFromDb(courseId, cancellation);
-                                    }
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-                            }
 
                             // Sort cancellation list by date
                             cancellationList.sort((c1, c2) -> {
@@ -719,7 +660,7 @@ public class ScheduleFragment extends Fragment {
                     }
 
                     // Inflate the popup view and populate the textviews
-                    View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.course_details_popup, null);
+                    View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_course_details, null);
                     TextView courseNameTextView = popupView.findViewById(R.id.course_name);
                     TextView courseIdTextView = popupView.findViewById(R.id.course_id);
                     TextView classTimeTextView = popupView.findViewById(R.id.class_time);
@@ -736,7 +677,7 @@ public class ScheduleFragment extends Fragment {
                     courseIdTextView.setText("Course Id: " + courseId);
                     classTimeTextView.setText(String.format("Time: %s:00 - %s:00", startTime, endTime));
                     sectionTextView.setText("Section: " + section);
-                    locationTextView.setText("Location: " + location);
+                    locationTextView.setText("Location: " + extractTimeLocation(location));
                     lecturerTextView.setText("Lecturer: " + lecturer);
                     classDayTextView.setText("Day: " + classDay);
 
@@ -760,7 +701,7 @@ public class ScheduleFragment extends Fragment {
                         // Clear existing rows
                         cancellationTable.removeAllViews();
 
-                        for (Cancellation cancellation : cancellationList) {
+                        for (CancelledClass cancellation : cancellationList) {
                             TableRow row = new TableRow(getActivity());
                             row.setLayoutParams(new TableRow.LayoutParams(
                                     TableRow.LayoutParams.MATCH_PARENT,
@@ -773,7 +714,7 @@ public class ScheduleFragment extends Fragment {
                             cancellationInfo.setText(String.format("Cancelled Date: %s %s:00\nReason: %s\nReplacement: %s %s at %s",
                                     cancellation.getCancelledDate(), cancellation.getCancelledStartTime(),
                                     cancellation.getReason().equals("-") ? "No reason provided" : cancellation.getReason(),
-                                    cancellation.getReplacementDate(), cancellation.getReplacementTime(), cancellation.getReplacementLocation()));
+                                    cancellation.getReplaceDate(), cancellation.getReplaceDate(), cancellation.getReplacementLocation()));
                             cancellationInfo.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
                             row.addView(cancellationInfo);
 
@@ -849,7 +790,7 @@ public class ScheduleFragment extends Fragment {
     }
 
     // Helper method to remove the cancelled class from the database
-    private void removeCancelledClassFromDb(String courseId, Cancellation cancellation) {
+    private void removeCancelledClassFromDb(String courseId, CancelledClass cancellation) {
         db.collection("Students").document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -869,8 +810,8 @@ public class ScheduleFragment extends Fragment {
                                 // Construct the exact cancellation string
                                 String expectedCancellation = String.format("(%s %s %s %s %s %s %s)",
                                         courseId, cancellation.getCancelledDate(),
-                                        cancellation.getCancelledStartTime(), cancellation.getReplacementDate(),
-                                        cancellation.getReplacementTime(), cancellation.getReplacementLocation(), cancellation.getReason());
+                                        cancellation.getCancelledStartTime(), cancellation.getReplaceDate(),
+                                        cancellation.getReplaceTime(), cancellation.getReplacementLocation(), cancellation.getReason());
 
                                 Log.d("RemoveFromDB", expectedCancellation);
 

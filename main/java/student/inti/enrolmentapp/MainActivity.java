@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else if (item.getItemId() == R.id.enrolment) {
                 if (userId != null) {
-                    fragment = EnrolmentFragment.newInstance(userId);
+                    fragment = EnrollmentFragment.newInstance(userId);
                 } else {
                     fragment = new LoginFragment(); // Go to login if user is not logged in
                 }

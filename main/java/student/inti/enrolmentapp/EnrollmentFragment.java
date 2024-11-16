@@ -1,41 +1,55 @@
 package student.inti.enrolmentapp;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Gravity;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.GridLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.widget.TextView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EnrollmentFragment extends Fragment {
-    private static final String ARG_USER_ID = "userId";
-    private RecyclerView enrolmentRecyclerView, courseListRecyclerView;
-    private FirebaseFirestore db;
-    private String userId;
-    private ArrayList<String> upcomingCourses;  // List of upcoming course IDs
-    private ArrayList<Course> courseList;  // All available courses for the program
-    private ArrayList<Course> filteredCourses;  // Filtered courses that are in the upcomingCourses list
-    private ArrayList<Course> selectedUpcomingCourses;  // Courses from the UpcomingCourse list
-    private ArrayList<CourseSection> selectedCourseSections;
-    private TextView courseDetailsTextView;
 
-    public EnrollmentFragment() {
-        // Required empty public constructor
-    }
+    private static final String ARG_USER_ID = "userId";
+    private String userId;
+    private String programmeId;
+    private FirebaseFirestore db;
+    private CourseListAdapter adapter;
+    private LinearLayout courseSelectionLayout;  // To hold the course selection details
+    private Button enrollButton;
 
     public static EnrollmentFragment newInstance(String userId) {
         EnrollmentFragment fragment = new EnrollmentFragment();
@@ -48,380 +62,631 @@ public class EnrollmentFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = FirebaseFirestore.getInstance();
-        upcomingCourses = new ArrayList<>();
-        courseList = new ArrayList<>();
-        filteredCourses = new ArrayList<>();
-        selectedUpcomingCourses = new ArrayList<>();
-        selectedCourseSections = new ArrayList<>();
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (getArguments() != null) {
             userId = getArguments().getString(ARG_USER_ID);
         }
+        db = FirebaseFirestore.getInstance();
+    }
 
-        // Inflate the layout for this fragment
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_enrollment, container, false);
 
-        enrolmentRecyclerView = view.findViewById(R.id.enrolment_course_RecycleView);
-        courseListRecyclerView = view.findViewById(R.id.course_list_checkbox_RecyclerView);
-        courseDetailsTextView = view.findViewById(R.id.course_details_text_view); // Initialize TextView
+        TableLayout enrollPlanTable = view.findViewById(R.id.enrollPlanTable);
+        populateEnrollmentPlan(enrollPlanTable);
 
-        // Apply hex color to course details text view
-        courseDetailsTextView.setTextColor(Color.parseColor("#FF5733")); // Example hex color
-
-        enrolmentRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        RecyclerView courseListRecyclerView = view.findViewById(R.id.courseListRecyclerView);
         courseListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        courseListRecyclerView.setVerticalScrollBarEnabled(true);
 
-        // Fetch upcoming courses from Firestore
-        db.collection("Students").document(userId).get().addOnSuccessListener(documentSnapshot -> {
-            if (isAdded() && documentSnapshot.exists()) {
-                Object upcomingCoursesData = documentSnapshot.get("UpcomingCourse");
-                if (upcomingCoursesData != null) {
-                    if (upcomingCoursesData instanceof ArrayList) {
-                        upcomingCourses = (ArrayList<String>) upcomingCoursesData;
-                    } else if (upcomingCoursesData instanceof String) {
-                        String[] coursesArray = ((String) upcomingCoursesData).split(",\\s*");
-                        upcomingCourses = new ArrayList<>();
-                        Collections.addAll(upcomingCourses, coursesArray);
-                    }
-                } else {
-                    upcomingCourses = new ArrayList<>();
-                }
+        adapter = new CourseListAdapter(new ArrayList<>(), (courseId, isChecked) -> onCourseClick(courseId, isChecked));
 
-                loadCourses(); // Load courses after verifying upcoming courses
-            }
-        }).addOnFailureListener(e -> {
-            Log.e("EnrollmentFragment", "Error fetching student data", e);
-        });
+        courseListRecyclerView.setAdapter(adapter);
+
+        courseSelectionLayout = view.findViewById(R.id.courseSelectionLayout);
+        courseSelectionLayout.setVisibility(View.GONE); // Initially hidden
+
+        populateCourseList();
+
+        // Enroll button initialization
+        enrollButton = view.findViewById(R.id.btnEnrol);
+        enrollButton.setOnClickListener(v -> handleEnrollment()); // Set the click listener for the Enroll button
 
         return view;
     }
 
-    private void loadCourses() {
-        courseList.clear(); // Clear any existing data
+    private void populateEnrollmentPlan(TableLayout table) {
+        // Clear any previous data
+        table.removeAllViews();
 
-        // Fetch ProgrammeID from Students collection
-        db.collection("Students").document(userId).get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                String programmeId = documentSnapshot.getString("ProgrammeID");
+        db.collection("Students").document(userId).get().addOnSuccessListener(studentDoc -> {
+            if (studentDoc.exists() && studentDoc.contains("UpcomingCourse")) {
+                String upcomingCourses = studentDoc.getString("UpcomingCourse");
+                if (upcomingCourses != null && !upcomingCourses.isEmpty()) {
+                    String[] courseIds = upcomingCourses.split(", ");
+                    AtomicInteger count = new AtomicInteger(1); // Start the count from 1
 
-                if (programmeId != null) {
-                    fetchCoursesInProgramme(programmeId);
+                    for (String courseId : courseIds) {
+                        db.collection("Courses").document(courseId).get().addOnSuccessListener(courseDoc -> {
+                            if (courseDoc.exists()) {
+                                String courseName = courseDoc.getString("Name");
+
+                                TableRow row = new TableRow(getContext());
+                                row.setLayoutParams(new TableRow.LayoutParams(
+                                        TableRow.LayoutParams.MATCH_PARENT,
+                                        TableRow.LayoutParams.WRAP_CONTENT));
+
+                                // Count Column
+                                TextView countCell = new TextView(getContext());
+                                countCell.setText(String.valueOf(count.getAndIncrement()));
+                                countCell.setTextColor(0xFF6393A8);
+                                countCell.setPadding(8, 8, 8, 8);
+
+                                // Course ID Column
+                                TextView courseIdCell = new TextView(getContext());
+                                courseIdCell.setText(courseId);
+                                courseIdCell.setPadding(8, 8, 8, 8);
+
+                                // Course Name Column
+                                TextView courseNameCell = new TextView(getContext());
+                                courseNameCell.setText(courseName);
+                                courseNameCell.setPadding(8, 8, 8, 8);
+
+                                row.addView(countCell);
+                                row.addView(courseIdCell);
+                                row.addView(courseNameCell);
+
+                                table.addView(row);
+                            }
+                        });
+                    }
+                } else {
+                    // If no upcoming courses or the string is empty, show the "No upcoming courses" message
+                    showNoUpcomingCoursesMessage(table);
                 }
+            } else {
+                // If the "UpcomingCourse" field does not exist in the document, show the message
+                showNoUpcomingCoursesMessage(table);
             }
-        }).addOnFailureListener(e -> {
-            Log.e("loadCourses", "Error fetching student data", e);
         });
     }
 
-    private void fetchCoursesInProgramme(String programmeId) {
-        db.collection("Courses")
-                .whereEqualTo("ProgrammeID", programmeId)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    if (!querySnapshot.isEmpty()) {
-                        // Clear filteredCourses to ensure it only contains the relevant courses
-                        filteredCourses.clear();
-                        for (QueryDocumentSnapshot courseDoc : querySnapshot) {
-                            String courseName = courseDoc.getString("Name");
-                            String courseId = courseDoc.getId(); // Document ID as course ID
+    private void showNoUpcomingCoursesMessage(TableLayout table) {
+        TableRow row = new TableRow(getContext());
+        row.setLayoutParams(new TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT));
 
-                            if (courseName != null) {
-                                // Add all courses with the matching ProgrammeID to the filtered list
-                                Course course = new Course(courseName, courseId, "", "", "", "", "", "", "", "");
-                                filteredCourses.add(course);
-                            }
+        TextView messageCell = new TextView(getContext());
+        messageCell.setText("No upcoming courses to enroll in");
+        messageCell.setTextColor(0xFFB0B0B0);  // Light grey color
+        messageCell.setPadding(16, 16, 16, 16);
+        messageCell.setTextSize(16);
+        messageCell.setGravity(Gravity.CENTER);
+
+        row.addView(messageCell);
+        table.addView(row);
+    }
+
+    private void populateCourseList() {
+        db.collection("Students").document(userId).get().addOnSuccessListener(studentDoc -> {
+            if (studentDoc.exists() && studentDoc.contains("ProgrammeID")) {
+                String studentProgrammeId = studentDoc.getString("ProgrammeID");
+                programmeId = studentProgrammeId;
+
+                // Query all courses, we'll handle the matching logic later
+                db.collection("Courses").get().addOnSuccessListener(courses -> {
+                    ArrayList<String> courseData = new ArrayList<>();
+
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot courseDoc : courses) {
+                        String courseProgrammeId = courseDoc.getString("ProgrammeID");
+                        String courseName = courseDoc.getString("Name");
+                        String courseId = courseDoc.getId();
+
+                        // Show the course if the ProgrammeID contains the student's ProgrammeID or if ProgrammeID is "-"
+                        if (courseProgrammeId != null &&
+                                (courseProgrammeId.contains(studentProgrammeId) || courseProgrammeId.equals("-"))) {
+                            String courseDisplay = courseId + " - " + courseName;
+                            courseData.add(courseDisplay);
+                            Log.d("EnrollData", courseDisplay);
                         }
-                        // Now populate the RecyclerViews
-                        populateRecyclerViews();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("fetchCoursesInProgramme", "Error fetching courses for ProgrammeID: " + programmeId, e);
-                });
-    }
-
-    private void populateRecyclerViews() {
-        // Show courses the student is enrolled in (UpcomingCourse)
-        selectedUpcomingCourses.clear();
-        for (String courseId : upcomingCourses) {
-            for (Course course : filteredCourses) {
-                if (course.getId().equals(courseId)) {
-                    selectedUpcomingCourses.add(course);
-                }
-            }
-        }
-
-        // Set up the RecyclerView for enrolled courses
-        EnrollmentAdapter enrolledAdapter = new EnrollmentAdapter(selectedUpcomingCourses);
-        enrolmentRecyclerView.setAdapter(enrolledAdapter);
-
-        // Set up the RecyclerView for all courses in the program
-        EnrollmentAdapter allCoursesAdapter = new EnrollmentAdapter(filteredCourses);
-        courseListRecyclerView.setAdapter(allCoursesAdapter);
-    }
-
-    private void showCourseSelection(Course course) {
-        // Start with the basic course information
-        String courseDetails = "ID: " + course.getId() + "\n" + "Name: " + course.getName() + "\n";
-
-        // Initialize Firestore
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Query to get section details from Firestore (assuming "Sections" is a collection in your Firestore DB)
-        db.collection("Courses")
-                .document(course.getId())
-                .collection("Sections") // Assuming each course has a "Sections" subcollection
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    // StringBuilder to hold the section-specific details
-                    StringBuilder sectionDetails = new StringBuilder();
-
-                    // Iterate through each section document retrieved
-                    for (QueryDocumentSnapshot sectionDoc : querySnapshot) {
-                        String sectionName = sectionDoc.getString("sectionName");
-                        String lectureDay = sectionDoc.getString("lectureDay");
-                        String lectureStartTime = sectionDoc.getString("lectureStartTime");
-                        String lectureEndTime = sectionDoc.getString("lectureEndTime");
-                        String practicalDay = sectionDoc.getString("practicalDay");
-                        String practicalStartTime = sectionDoc.getString("practicalStartTime");
-                        String practicalEndTime = sectionDoc.getString("practicalEndTime");
-                        String remarks = sectionDoc.getString("remarks");
-
-                        // Append the section details to the StringBuilder
-                        sectionDetails.append("Section: ").append(sectionName).append("\n")
-                                .append("Lecture Day: ").append(lectureDay).append("\n")
-                                .append("Lecture Time: ").append(lectureStartTime).append(" - ").append(lectureEndTime).append("\n")
-                                .append("Practical Day: ").append(practicalDay).append("\n")
-                                .append("Practical Time: ").append(practicalStartTime).append(" - ").append(practicalEndTime).append("\n")
-                                .append("Remarks: ").append(remarks).append("\n\n");
                     }
 
-                    // Set the detailed course information in the TextView
-                    courseDetailsTextView.setText(courseDetails + sectionDetails.toString());
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore Error", "Error fetching section details", e);
-                    // In case of error, set a fallback message
-                    courseDetailsTextView.setText("Failed to load section details.");
+                    // Update the RecyclerView with the populated course list
+                    adapter.updateCourseList(courseData);
                 });
-    }
-
-// Helper methods to extract specific details
-
-    // Extracts the lecture day for the given section from the comma-separated list
-    private String extractDay(String daysData, String section) {
-        // Days data is in format: "Monday (CS1), Tuesday (CS2)"
-        String[] daysArray = daysData.split(", ");
-        for (String dayData : daysArray) {
-            if (dayData.contains(section)) {
-                return dayData.split(" ")[0]; // Split and return the day part (e.g., "Monday")
             }
-        }
-        return "Unknown";
+        });
     }
 
-    // Extracts the time for the given section from the comma-separated list
-    private String extractTime(String timesData, String section) {
-        // Times data is in format: "8 (CS1), 10 (CS2)"
-        String[] timesArray = timesData.split(", ");
-        for (String timeData : timesArray) {
-            if (timeData.contains(section)) {
-                return timeData.split(" ")[0]; // Split and return the time part (e.g., "8")
-            }
+    // Inner RecyclerView Adapter Class
+    public static class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.CourseViewHolder> {
+
+        private ArrayList<String> courseList;
+        private OnCourseClickListener onCourseClickListener;
+        private Map<String, Boolean> selectedCourses = new HashMap<>(); // To track selected courses by courseId
+
+        public interface OnCourseClickListener {
+            void onCourseClick(String courseId, boolean isChecked);
         }
-        return "Unknown";
-    }
 
-    // Extracts the remarks for the given section (if any)
-    private String extractRemarks(String remarksData, String section) {
-        // Remarks data is in format: "- (CS1), - (CS2)"
-        String[] remarksArray = remarksData.split(", ");
-        for (String remark : remarksArray) {
-            if (remark.contains(section)) {
-                return remark.split(" ")[0]; // In this case, there seems to be no specific remark, so just return "-"
-            }
-        }
-        return "-"; // Default remark if no specific remark found
-    }
-
-    private class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.ViewHolder> {
-        private ArrayList<Course> courses;
-
-        EnrollmentAdapter(ArrayList<Course> courses) {
-            this.courses = courses;
+        public CourseListAdapter(ArrayList<String> courseList, OnCourseClickListener onCourseClickListener) {
+            this.courseList = courseList;
+            this.onCourseClickListener = onCourseClickListener;
         }
 
         @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
-            return new ViewHolder(view);
+        public CourseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            Context context = parent.getContext();
+            if (context == null) {
+                Log.e("CourseListAdapter", "Parent context is null");
+                return null;
+            }
+
+            TableRow tableRow = new TableRow(context);
+            tableRow.setPadding(16, 16, 0, 16);
+            tableRow.setLayoutParams(new TableRow.LayoutParams(
+                    TableRow.LayoutParams.MATCH_PARENT,
+                    TableRow.LayoutParams.WRAP_CONTENT));
+
+            TextView courseIdTextView = new TextView(context);
+            courseIdTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+            courseIdTextView.setGravity(Gravity.CENTER_VERTICAL);
+            courseIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            courseIdTextView.setPadding(8, 8, 8, 8);
+            tableRow.addView(courseIdTextView);
+
+            TextView courseNameTextView = new TextView(context);
+            courseNameTextView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
+            courseNameTextView.setGravity(Gravity.CENTER_VERTICAL);
+            courseNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            courseNameTextView.setPadding(8, 8, 8, 8);
+            tableRow.addView(courseNameTextView);
+
+            CheckBox courseCheckBox = new CheckBox(context);
+            TableRow.LayoutParams checkBoxParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f);
+            checkBoxParams.gravity = Gravity.CENTER_VERTICAL;
+            courseCheckBox.setLayoutParams(checkBoxParams);
+            courseCheckBox.setGravity(Gravity.CENTER_VERTICAL);
+            tableRow.addView(courseCheckBox);
+
+            return new CourseViewHolder(tableRow, courseIdTextView, courseNameTextView, courseCheckBox);
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            Course course = courses.get(position);
-            holder.courseIdTextView.setText(course.getId());
-            holder.courseNameTextView.setText(course.getName());
+        public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
+            String course = courseList.get(position);
+            String[] parts = course.split(" - ");
+            String courseId = parts[0];
+            String courseName = parts.length > 1 ? parts[1] : "";
+
+            holder.courseIdTextView.setText(courseId);
+            holder.courseNameTextView.setText(courseName);
+
+            // Set CheckBox state based on stored selection
+            holder.courseCheckBox.setOnCheckedChangeListener(null); // Clear previous listener
+            holder.courseCheckBox.setChecked(selectedCourses.getOrDefault(courseId, false));
+
+            // Set up the CheckBox listener to manage selection changes
+            holder.courseCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                selectedCourses.put(courseId, isChecked); // Update selected state in the map
+                onCourseClickListener.onCourseClick(courseId, isChecked);
+            });
         }
 
         @Override
         public int getItemCount() {
-            return courses.size();
+            return courseList.size();
         }
 
-        class ViewHolder extends RecyclerView.ViewHolder {
+        public void updateCourseList(ArrayList<String> courseList) {
+            this.courseList = courseList;
+            notifyDataSetChanged();
+        }
+
+        static class CourseViewHolder extends RecyclerView.ViewHolder {
             TextView courseIdTextView;
             TextView courseNameTextView;
+            CheckBox courseCheckBox;
 
-            ViewHolder(View itemView) {
+            public CourseViewHolder(@NonNull View itemView, TextView courseIdTextView, TextView courseNameTextView, CheckBox courseCheckBox) {
                 super(itemView);
-                courseIdTextView = itemView.findViewById(android.R.id.text1);
-                courseNameTextView = itemView.findViewById(android.R.id.text2);
-                itemView.setOnClickListener(v -> showCourseSelection(courses.get(getAdapterPosition())));
+                this.courseIdTextView = courseIdTextView;
+                this.courseNameTextView = courseNameTextView;
+                this.courseCheckBox = courseCheckBox;
             }
         }
     }
 
-    public static class CourseSection {
-        private String sectionName;
-        private String lecturerId;
-        private String lectureLocation;
-        private String lectureDay;
-        private String lectureStartTime;
-        private String lectureEndTime;
-        private String practicalDay;
-        private String practicalStartTime;
-        private String practicalEndTime;
-        private String remarks;
+    // Handle click on course item
+    private Map<String, CourseSchedule> selectedCourses = new HashMap<>();
+    private Map<String, RadioButton> selectedRadioButtons = new HashMap<>(); // To store the selected radio button per course
 
-        public CourseSection(String sectionName, String lecturerId, String lectureLocation, String lectureDay,
-                             String lectureStartTime, String lectureEndTime, String practicalDay,
-                             String practicalStartTime, String practicalEndTime, String remarks) {
-            this.sectionName = sectionName;
-            this.lecturerId = lecturerId;
-            this.lectureLocation = lectureLocation;
-            this.lectureDay = lectureDay;
-            this.lectureStartTime = lectureStartTime;
-            this.lectureEndTime = lectureEndTime;
-            this.practicalDay = practicalDay;
-            this.practicalStartTime = practicalStartTime;
-            this.practicalEndTime = practicalEndTime;
-            this.remarks = remarks;
+    private void onCourseClick(String courseId, boolean isChecked) {
+        TableLayout courseDetailsContainer = getView() != null ? getView().findViewById(R.id.courseDetailsContainer) : null;
+
+        if (courseDetailsContainer == null) {
+            Log.e("EnrollData", "Course Details Container not found.");
+            return;
         }
 
-        public String getSectionName() {
-            return sectionName;
-        }
+        if (isChecked) {
+            Log.d("EnrollData", "Checkbox for " + courseId + " checked.");
 
-        public String getLecturerId() {
-            return lecturerId;
-        }
+            db.collection("Courses").document(courseId).get().addOnSuccessListener(courseDoc -> {
+                if (courseDoc.exists()) {
+                    String courseName = courseDoc.getString("Name");
+                    String sections = courseDoc.getString("Sections");
+                    String lectureDays = courseDoc.getString("LectureDays");
+                    String lectureStartTimes = courseDoc.getString("LectureStartTimes");
+                    String lectureEndTimes = courseDoc.getString("LectureEndTimes");
+                    String practicalDays = courseDoc.getString("PracticalDays");
+                    String practicalStartTimes = courseDoc.getString("PracticalStartTimes");
+                    String practicalEndTimes = courseDoc.getString("PracticalEndTimes");
+                    String remarks = courseDoc.getString("Remarks");
 
-        public String getLectureLocation() {
-            return lectureLocation;
-        }
+                    // Split sections and relevant information into arrays
+                    String[] sectionsArray = sections.split(", ");
+                    String[] lectureDaysArray = lectureDays.split(", ");
+                    String[] lectureStartTimesArray = lectureStartTimes.split(", ");
+                    String[] lectureEndTimesArray = lectureEndTimes.split(", ");
+                    String[] practicalDaysArray = practicalDays.split(", ");
+                    String[] practicalStartTimesArray = practicalStartTimes.split(", ");
+                    String[] practicalEndTimesArray = practicalEndTimes.split(", ");
 
-        public String getLectureDay() {
-            return lectureDay;
-        }
+                    // Show the course name
+                    courseSelectionLayout.setVisibility(View.VISIBLE);
 
-        public String getLectureStartTime() {
-            return lectureStartTime;
-        }
+                    final String[] sectionId = {""};
 
-        public String getLectureEndTime() {
-            return lectureEndTime;
-        }
+                    // Query the Programmes collection to get SectionID
+                    db.collection("Programmes").document(programmeId).get().addOnSuccessListener(programmeDoc -> {
+                        if (programmeDoc.exists()) {
+                            sectionId[0] = programmeDoc.getString("SectionID");
+                        }
 
-        public String getPracticalDay() {
-            return practicalDay;
-        }
+                        // Prepare to dynamically display sections details
+                        StringBuilder sectionsDetails = new StringBuilder();
 
-        public String getPracticalStartTime() {
-            return practicalStartTime;
-        }
+                        // Add the course ID and name before the course details
+                        sectionsDetails.append("\n").append(courseId).append("\n");
+                        sectionsDetails.append(courseName).append("\n\n");
 
-        public String getPracticalEndTime() {
-            return practicalEndTime;
-        }
+                        // Create a new TableRow for the course details
+                        TableRow row = new TableRow(getContext());
+                        row.setTag(courseId);  // Set a unique tag for the course to identify it later
+                        String lectureDaysAndTimes = "";
+                        String practicalDaysAndTimes = "";
+                        // Loop through each section in the course
+                        // Loop through each section in the course
+                        for (int i = 0; i < sectionsArray.length; i++) {
+                            String section = sectionsArray[i].trim(); // Trim the section string to remove any leading/trailing whitespace
 
-        public String getRemarks() {
-            return remarks;
+                            // Check if the section starts with the sectionId
+                            if (section.startsWith(sectionId[0])) {
+                                sectionsDetails.append("Section ").append(section).append("\n");
+
+                                // Reset lectureDaysAndTimes and practicalDaysAndTimes for each section to avoid duplication
+                                 lectureDaysAndTimes = ""; // Reset this variable for each section
+                                 practicalDaysAndTimes = ""; // Reset this variable for each section
+
+                                // Display lecture details
+                                if (i < lectureDaysArray.length && i < lectureStartTimesArray.length && i < lectureEndTimesArray.length) {
+                                    lectureDaysAndTimes += "Lecture Day(s): " + extractTimeLocation(lectureDaysArray[i]) + "\n";
+                                    lectureDaysAndTimes += "Lecture Time(s): " + extractTimeLocation(lectureStartTimesArray[i]) + " to "
+                                            + extractTimeLocation(lectureEndTimesArray[i]) + "\n";
+                                }
+
+                                // Display practical details only if available
+                                if (i < practicalDaysArray.length && i < practicalStartTimesArray.length && i < practicalEndTimesArray.length) {
+                                    if (!"-".equals(practicalDaysArray[i])) {
+                                        practicalDaysAndTimes += "Practical Day(s): " + extractTimeLocation(practicalDaysArray[i]) + "\n";
+                                        practicalDaysAndTimes += "Practical Time(s): " + extractTimeLocation(practicalStartTimesArray[i]) + " to "
+                                                + extractTimeLocation(practicalEndTimesArray[i]) + "\n";
+                                    }
+                                }
+
+                                // Append the details to sectionsDetails
+                                sectionsDetails.append(lectureDaysAndTimes);
+                                sectionsDetails.append(practicalDaysAndTimes);
+                                sectionsDetails.append("Remarks: ").append(remarks != null ? remarks : "-").append("\n\n");
+                            }
+                        }
+
+                        // Create a new TextView for displaying course details and add it to the row
+                        TextView courseDetailsTextView = new TextView(getContext());
+                        courseDetailsTextView.setText(sectionsDetails.toString());
+                        row.addView(courseDetailsTextView);  // Add to the TableRow
+
+                        // Add the TableRow to the TableLayout
+                        courseDetailsContainer.addView(row);
+
+                        // Dynamically create radio buttons for sections (after course details)
+                        if (sectionsArray.length >= 1) {
+                            // Display the message for multiple sections
+                            TextView selectSectionMessage = new TextView(getContext());
+                            selectSectionMessage.setText("Select a section to proceed");
+                            selectSectionMessage.setVisibility(View.VISIBLE);
+
+                            TableLayout tableLayout = new TableLayout(getContext()); // Create new TableLayout for radio buttons
+                            tableLayout.setTag(courseId); // Set a unique tag for the TableLayout
+
+                            TableRow currentRow = null; // To hold the current row of radio buttons
+                            int columnCount = 0; // To track the number of radio buttons in the current row
+
+                            // Dynamically create radio buttons for each section
+                            for (int i = 0; i < sectionsArray.length; i++) {
+                                String section = sectionsArray[i];
+
+                                // Only create radio button if the section starts with the sectionId
+                                if (!"-".equals(section) && section.startsWith(sectionId[0])) {
+                                    if (columnCount == 4) {
+                                        // If the row has 4 radio buttons, create a new row
+                                        currentRow = new TableRow(getContext());
+                                        tableLayout.addView(currentRow);
+                                        columnCount = 0; // Reset column count for the new row
+                                    }
+
+                                    RadioButton radioButton = new RadioButton(getContext());
+                                    radioButton.setText(section);
+                                    radioButton.setId(View.generateViewId()); // Generate unique ID for each radio button
+                                    radioButton.setTag(section); // Set a tag for the section
+
+                                    // Add an OnClickListener to manually handle the selection logic
+                                    String finalLectureDaysAndTimes = lectureDaysAndTimes;
+                                    String finalPracticalDaysAndTimes = practicalDaysAndTimes;
+                                    radioButton.setOnClickListener(v -> {
+                                        // Check if there's a previously selected radio button for this course
+                                        RadioButton previousSelectedButton = selectedRadioButtons.get(courseId);
+                                        if (previousSelectedButton != null) {
+                                            // Deselect the previously selected radio button
+                                            previousSelectedButton.setChecked(false);
+                                        }
+
+                                        // Store the current selected radio button
+                                        selectedRadioButtons.put(courseId, radioButton);
+
+                                        // Check for clashes with the selected section
+                                        String selectedSection = section;
+                                        String selectedDaysAndTimes = finalLectureDaysAndTimes + finalPracticalDaysAndTimes;
+
+                                        // Store the selected section information
+                                        CourseSchedule selectedCourse = new CourseSchedule(courseId, selectedSection, selectedDaysAndTimes);
+
+                                        // Store the selected course
+                                        selectedCourses.put(courseId + selectedSection, selectedCourse);
+
+                                        // Show a Toast message indicating the section has been selected
+                                        Toast.makeText(getContext(), section + " selected", Toast.LENGTH_SHORT).show();
+                                    });
+
+                                    // Add the radio button to the current row
+                                    if (currentRow == null) {
+                                        currentRow = new TableRow(getContext());
+                                        tableLayout.addView(currentRow); // Add the first row
+                                    }
+                                    currentRow.addView(radioButton); // Add radio button to current row
+                                    columnCount++; // Increment the column count
+                                }
+                            }
+
+                            // Add the select section message and the tableLayout to the layout
+                            courseDetailsContainer.addView(selectSectionMessage);
+                            courseDetailsContainer.addView(tableLayout); // Add the TableLayout with radio buttons
+
+                            // Create and add the line of underscores
+                            TextView lineSeparator = new TextView(getContext());
+                            lineSeparator.setText("______________________________________________");
+                            courseDetailsContainer.addView(lineSeparator);
+                        }
+                    });
+                }
+            });
+        } else {
+            Log.d("EnrollData", "Checkbox for " + courseId + " unchecked.");
+
+            // Remove the course details row if unchecked
+            if (courseDetailsContainer != null) {
+                View courseView = courseDetailsContainer.findViewWithTag(courseId);
+                if (courseView != null) {
+                    courseDetailsContainer.removeView(courseView);
+                }
+
+                // Also remove the dynamically added TableLayout (radio buttons)
+                for (int i = 0; i < courseDetailsContainer.getChildCount(); i++) {
+                    View childView = courseDetailsContainer.getChildAt(i);
+                    if (childView instanceof TableLayout) {
+                        TableLayout radioButtonLayout = (TableLayout) childView;
+                        if (radioButtonLayout.getTag() != null && radioButtonLayout.getTag().equals(courseId)) {
+                            courseDetailsContainer.removeView(radioButtonLayout);
+                        }
+                    }
+                }
+
+                // Remove selectSectionMessage and lineSeparator if present
+                for (int i = 0; i < courseDetailsContainer.getChildCount(); i++) {
+                    View childView = courseDetailsContainer.getChildAt(i);
+                    if (childView instanceof TextView) {
+                        String text = ((TextView) childView).getText().toString();
+                        if ("Select a section to proceed".equals(text) || "______________________________________________".equals(text)) {
+                            courseDetailsContainer.removeView(childView);
+                        }
+                    }
+                }
+            }
         }
     }
 
-    public static class Course {
-        private String id;
-        private String name;
-        private String sections; // Comma-separated list of sections (e.g., "CS1, CS2")
-        private String lectureDays; // Comma-separated list of lecture days (e.g., "Monday (CS1), Tuesday (CS2)")
-        private String lectureStartTimes; // Comma-separated list of lecture start times (e.g., "8 (CS1), 10 (CS2)")
-        private String lectureEndTimes; // Comma-separated list of lecture end times (e.g., "10 (CS1), 12 (CS2)")
-        private String practicalDays; // Comma-separated list of practical days (e.g., "Wednesday (CS1), Thursday (CS2)")
-        private String practicalStartTimes; // Comma-separated list of practical start times (e.g., "11 (CS1), 12 (CS2)")
-        private String practicalEndTimes; // Comma-separated list of practical end times (e.g., "13 (CS1), 14 (CS2)")
-        private String remarks; // Comma-separated list of remarks (e.g., "- (CS1), - (CS2)")
+    // Helper class to store course schedule information
+    private static class CourseSchedule {
+        String courseName;
+        String section;
+        String daysAndTimes;
 
-        // Constructor
-        public Course(String id, String name, String sections, String lectureDays, String lectureStartTimes,
-                      String lectureEndTimes, String practicalDays, String practicalStartTimes,
-                      String practicalEndTimes, String remarks) {
-            this.id = id;
-            this.name = name;
-            this.sections = sections;
-            this.lectureDays = lectureDays;
-            this.lectureStartTimes = lectureStartTimes;
-            this.lectureEndTimes = lectureEndTimes;
-            this.practicalDays = practicalDays;
-            this.practicalStartTimes = practicalStartTimes;
-            this.practicalEndTimes = practicalEndTimes;
-            this.remarks = remarks;
+        CourseSchedule(String courseName, String section, String daysAndTimes) {
+            this.courseName = courseName;
+            this.section = section;
+            this.daysAndTimes = daysAndTimes;
+        }
+    }
+
+    // Handle Enroll button click
+    private void handleEnrollment() {
+        List<CourseSchedule> selectedCourseList = new ArrayList<>();
+        StringBuilder enrolledCourseDetails = new StringBuilder();
+        boolean hasClashes = false;
+        int checkedCoursesCount = 0;
+        int expectedCheckedCourses = 0;
+
+        // Collect selected courses and their associated radio buttons
+        for (Map.Entry<String, RadioButton> entry : selectedRadioButtons.entrySet()) {
+            String courseId = entry.getKey();
+            RadioButton radioButton = entry.getValue();
+
+            // Ensure radio button is selected for every course
+            if (radioButton != null && radioButton.isChecked()) {
+                String sectionTag = (String) radioButton.getTag();
+                if (sectionTag != null && !sectionTag.isEmpty()) {
+                    expectedCheckedCourses++;
+                    CourseSchedule selectedCourse = selectedCourses.get(courseId + sectionTag);
+                    if (selectedCourse != null) {
+                        selectedCourseList.add(selectedCourse);
+                        enrolledCourseDetails.append(courseId).append(" (").append(sectionTag).append("), ");
+                        checkedCoursesCount++;
+                    }
+                }
+            }
         }
 
-        // Getter methods
-        public String getId() {
-            return id;
+        // Verify if all courses have selected sections
+        if (checkedCoursesCount != expectedCheckedCourses) {
+            Toast.makeText(getContext(), "Please select a section for each course to enroll.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        public String getName() {
-            return name;
+        // Check for schedule clashes
+        if (selectedCourseList.size() > 1) {
+            for (int i = 0; i < selectedCourseList.size(); i++) {
+                for (int j = i + 1; j < selectedCourseList.size(); j++) {
+                    CourseSchedule course1 = selectedCourseList.get(i);
+                    CourseSchedule course2 = selectedCourseList.get(j);
+                    if (hasScheduleClash(course1, course2)) {
+                        Toast.makeText(getContext(), "Schedule clash between " + course1.courseName + " and " + course2.courseName, Toast.LENGTH_LONG).show();
+                        hasClashes = true;
+                        break;
+                    }
+                }
+                if (hasClashes) break;
+            }
         }
 
-        public String getSections() {
-            return sections;
+        if (!hasClashes && !selectedCourseList.isEmpty()) {
+            enrolledCourseDetails.setLength(enrolledCourseDetails.length() - 2); // Remove last comma and space
+
+            AlertDialog dialog = new AlertDialog.Builder(getContext())
+                    .setTitle("Confirm Enrollment")
+                    .setMessage("Enroll into these courses?\n" + enrolledCourseDetails.toString())
+                    .setPositiveButton("Yes", (d, which) -> enrollCourses(selectedCourseList, enrolledCourseDetails))
+                    .setNegativeButton("No", null)
+                    .show();
+
+            // Customize the "No" button
+            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            negativeButton.setTextColor(Color.parseColor("#FFFF0000"));
+
+        } else if (selectedCourseList.isEmpty()) {
+            Toast.makeText(getContext(), "Please select at least one course and section.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void enrollCourses(List<CourseSchedule> selectedCourseList, StringBuilder enrolledCourseDetails) {
+        List<String> enrolledCourses = new ArrayList<>();
+        for (CourseSchedule course : selectedCourseList) {
+            enrolledCourses.add(course.courseName + " (" + course.section + ")");
         }
 
-        public String getLectureDays() {
-            return lectureDays;
-        }
+        String studentId = userId; // Replace with actual student ID retrieval logic
+        db.collection("Students").document(studentId).get().addOnSuccessListener(studentDoc -> {
+            if (studentDoc.exists()) {
+                String currentEnrolledCourses = studentDoc.getString("EnrolledCourse");
+                String upcomingCourses = studentDoc.getString("UpcomingCourse");
 
-        public String getLectureStartTimes() {
-            return lectureStartTimes;
-        }
+                Map<String, String> enrolledCourseMap = new HashMap<>();
+                if (currentEnrolledCourses != null) {
+                    for (String enrolledCourse : currentEnrolledCourses.split(", ")) {
+                        String[] parts = enrolledCourse.split(" \\(");
+                        if (parts.length == 2) {
+                            enrolledCourseMap.put(parts[0], parts[1].replace(")", ""));
+                        }
+                    }
+                }
 
-        public String getLectureEndTimes() {
-            return lectureEndTimes;
-        }
+                for (CourseSchedule course : selectedCourseList) {
+                    if (enrolledCourseMap.containsKey(course.courseName)) {
+                        if (!enrolledCourseMap.get(course.courseName).equals(course.section)) {
+                            enrolledCourseMap.put(course.courseName, course.section);
+                        }
+                    } else {
+                        enrolledCourseMap.put(course.courseName, course.section);
+                    }
+                }
 
-        public String getPracticalDays() {
-            return practicalDays;
-        }
+                StringBuilder updatedUpcomingCourses = new StringBuilder();
+                if (upcomingCourses != null) {
+                    String[] upcomingArray = upcomingCourses.split(", ");
+                    for (String course : upcomingArray) {
+                        if (!enrolledCourseMap.containsKey(course.split(" \\(")[0])) {
+                            updatedUpcomingCourses.append(course).append(", ");
+                        }
+                    }
+                }
 
-        public String getPracticalStartTimes() {
-            return practicalStartTimes;
-        }
+                StringBuilder enrolledCourseString = new StringBuilder();
+                for (Map.Entry<String, String> entry : enrolledCourseMap.entrySet()) {
+                    enrolledCourseString.append(entry.getKey()).append(" (").append(entry.getValue()).append("), ");
+                }
+                enrolledCourseString.setLength(enrolledCourseString.length() - 2);
 
-        public String getPracticalEndTimes() {
-            return practicalEndTimes;
-        }
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("EnrolledCourse", enrolledCourseString.toString());
+                updates.put("UpcomingCourse", updatedUpcomingCourses.length() > 0
+                        ? updatedUpcomingCourses.substring(0, updatedUpcomingCourses.length() - 2)
+                        : "");
 
-        public String getRemarks() {
-            return remarks;
+                db.collection("Students").document(studentId).update(updates)
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(getContext(), "Successfully enrolled in: " + enrolledCourseDetails.toString(), Toast.LENGTH_SHORT).show();
+                            refreshEnrollmentFragment(); // Refresh the fragment
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(getContext(), "Enrollment update failed.", Toast.LENGTH_SHORT).show();
+                            Log.e("Enrollment", "Error updating enrollment: ", e);
+                        });
+            }
+        });
+    }
+
+    // Helper method to check for time clashes between two courses
+    private boolean hasScheduleClash(CourseSchedule course1, CourseSchedule course2) {
+        return course1.daysAndTimes.equals(course2.daysAndTimes);
+    }
+
+    // Method to refresh the EnrollmentFragment
+    private void refreshEnrollmentFragment() {
+        FragmentManager fragmentManager = getParentFragmentManager();  // Prefer parent fragment manager
+        if (fragmentManager != null) {
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);  // Optional fade transition
+            ft.detach(this).attach(this).commit();
+        } else {
+            Log.e("Enrollment", "FragmentManager is null; unable to refresh fragment.");
         }
+    }
+
+    private String extractTimeLocation(String timeOrLocation) {
+        // Method to strip text within parentheses and trim spaces
+        return timeOrLocation != null ? timeOrLocation.replaceAll("\\(.*?\\)", "").trim() : "";
     }
 }

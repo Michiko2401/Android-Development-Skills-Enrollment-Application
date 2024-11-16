@@ -1,121 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EnrollmentFragment">
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="#FFFFFF">
+        android:orientation="vertical">
 
-        <!-- Title TextView -->
+        <!-- Title -->
         <TextView
+            android:id="@+id/enrollmentTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Enrollment Section"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:text="@string/enrolment_section_title"
-            android:textSize="26sp"
-            android:layout_gravity="center"
-            android:paddingBottom="16dp" />
+            android:layout_marginBottom="16dp" />
 
-        <!-- Enrollment Plan Title -->
+        <!-- Subtitle -->
         <TextView
+            android:id="@+id/enrollmentPlanSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingBottom="5dp"
-            android:text="@string/enrollment_plan"
+            android:text="Enrollment Plan"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:paddingTop="10dp" />
+            android:layout_marginBottom="8dp" />
 
-        <!-- Enrollment Plan RecyclerView -->
+        <!-- Enrollment Plan Table -->
+        <TableLayout
+            android:id="@+id/enrollPlanTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1"
+            android:layout_marginTop="8dp"
+            android:background="#ECF5FA">
+
+            <!-- Table Header -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </TableRow>
+
+        </TableLayout>
+
         <TextView
-            android:id="@+id/no_enrollment_course_message"
+            android:id="@+id/courseListSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/no_course_for_enrolment"
-            android:textSize="16sp"
-            android:visibility="gone"
-            android:layout_gravity="center"/>
+            android:text="Course List"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/enrolment_course_RecycleView"
+            android:id="@+id/courseListRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="300dp"
+            android:scrollbars="vertical"
+            android:scrollbarFadeDuration="0"/>
 
-        <!-- Course List Section -->
+        <!-- Course selection layout, initially hidden -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/courseSelectionLayout"
             android:orientation="vertical"
-            android:paddingTop="20dp"
-            android:foregroundTint="#A0AFB4">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Course List"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:paddingBottom="5dp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/course_list_checkbox_RecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-
-        <!-- Error TextView -->
-        <TextView
-            android:id="@+id/enrolment_error_handle"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="italic"
-            android:paddingBottom="8dp"
-            android:textSize="12sp"
-            android:textColor="@color/red"/>
+            android:paddingTop="24dp">
 
-        <!-- Selected Course Section -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="20dp">
-
+            <!-- Subtitle for course selection -->
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/courseSelectionSubtitle"
                 android:text="Course Selection"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:paddingBottom="5dp" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/course_details_text_view"
+            <TableLayout
+                android:id="@+id/courseDetailsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Select a course to see details"
-                android:textSize="16sp"
-                android:padding="16dp"/>
+                android:orientation="vertical"/>
+
         </LinearLayout>
 
-        <!-- Submit Button -->
         <Button
-            android:id="@+id/submit_button"
+            android:id="@+id/btnEnrol"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Enrol"
             android:layout_gravity="center"
-            android:text="@string/enrol_btn"
-            android:backgroundTint="#003366"
-            android:layout_marginTop="16dp"
-            android:padding="16dp" />
-
+            android:layout_marginTop="24dp" />
     </LinearLayout>
 </ScrollView>
